@@ -1,7 +1,7 @@
   
-import React from 'react'
-import { useQuery } from '@apollo/client'
-import { ALL_AUTHORS } from '../queries'
+import React, { useState } from 'react'
+import { useQuery, useMutation } from '@apollo/client'
+import { ALL_AUTHORS, EDIT_AUTHOR, ALL_BOOKS } from '../queries'
 //import { resultKeyNameFromField } from '@apollo/client/utilities'
 
 /*export const ALL_AUTHORS = gql`
@@ -17,6 +17,21 @@ import { ALL_AUTHORS } from '../queries'
 
 const Authors = (props) => {
   const result = useQuery(ALL_AUTHORS)
+  const [name, setName] = useState('')
+  const [setBornTo, setSetBornTo] = useState('')
+
+  const [ editAuthor ] = useMutation(EDIT_AUTHOR, {
+    refetchQueries: [ { query: ALL_AUTHORS }, { query: ALL_BOOKS } ]
+  })
+
+  const submit = async (event) => {
+    event.preventDefault()
+
+    editAuthor({ variables: { name, setBornTo } })
+
+    setName('')
+    setSetBornTo('')
+  }
   
   if (!props.show) {
     return null
@@ -49,6 +64,14 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
+      <div>
+        <h3>Set birthyear</h3>
+        <form onSubmit={submit}>
+          name<input value={name} onChange={({ target }) => setName(target.value)} /><br />
+          born<input value={setBornTo} onChange={({target}) => setSetBornTo(Number(target.value))} /><br />
+          <button type="submit">update author</button>
+        </form>
+      </div>
 
     </div>
   )
