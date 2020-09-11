@@ -1,5 +1,6 @@
   
 import React, { useState } from 'react'
+import Select from 'react-select'
 import { useQuery, useMutation } from '@apollo/client'
 import { ALL_AUTHORS, EDIT_AUTHOR, ALL_BOOKS } from '../queries'
 //import { resultKeyNameFromField } from '@apollo/client/utilities'
@@ -19,6 +20,7 @@ const Authors = (props) => {
   const result = useQuery(ALL_AUTHORS)
   const [name, setName] = useState('')
   const [setBornTo, setSetBornTo] = useState('')
+  const [selected, setSelected] = useState(null)
 
   const [ editAuthor ] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [ { query: ALL_AUTHORS }, { query: ALL_BOOKS } ]
@@ -32,6 +34,15 @@ const Authors = (props) => {
     setName('')
     setSetBornTo('')
   }
+
+  const handleSelectionChange = (selected) => {
+    setSelected(selected)
+    setName(selected.value)
+  }
+
+  let options = result.data && result.data.allAuthors.map(a => {
+    return { value: a.name, label: a.name}
+  })
   
   if (!props.show) {
     return null
@@ -67,7 +78,12 @@ const Authors = (props) => {
       <div>
         <h3>Set birthyear</h3>
         <form onSubmit={submit}>
-          name<input value={name} onChange={({ target }) => setName(target.value)} /><br />
+          {/*name<input value={name} onChange={({ target }) => setName(target.value)} /><br />*/}
+          <Select
+            value={selected}
+            onChange={handleSelectionChange}
+            options={options}
+          />
           born<input value={setBornTo} onChange={({target}) => setSetBornTo(Number(target.value))} /><br />
           <button type="submit">update author</button>
         </form>
