@@ -3,20 +3,8 @@ import React, { useState } from 'react'
 import Select from 'react-select'
 import { useQuery, useMutation } from '@apollo/client'
 import { ALL_AUTHORS, EDIT_AUTHOR, ALL_BOOKS } from '../queries'
-//import { resultKeyNameFromField } from '@apollo/client/utilities'
 
-/*export const ALL_AUTHORS = gql`
-  query {
-    allAuthors {
-      name
-      born
-      id
-      bookCount
-    }
-  }
-`*/
-
-const Authors = (props) => {
+const Authors = ({ show, token }) => {
   const result = useQuery(ALL_AUTHORS)
   const [name, setName] = useState('')
   const [setBornTo, setSetBornTo] = useState('')
@@ -25,6 +13,8 @@ const Authors = (props) => {
   const [ editAuthor ] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [ { query: ALL_AUTHORS }, { query: ALL_BOOKS } ]
   })
+
+  //const authors = result.data ? result.data.allAuthors : []
 
   const submit = async (event) => {
     event.preventDefault()
@@ -44,7 +34,7 @@ const Authors = (props) => {
     return { value: a.name, label: a.name}
   })
   
-  if (!props.show) {
+  if (!show) {
     return null
   }
 
@@ -75,10 +65,9 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
-      <div>
+      {token && <div>
         <h3>Set birthyear</h3>
         <form onSubmit={submit}>
-          {/*name<input value={name} onChange={({ target }) => setName(target.value)} /><br />*/}
           <Select
             value={selected}
             onChange={handleSelectionChange}
@@ -87,7 +76,7 @@ const Authors = (props) => {
           born<input value={setBornTo} onChange={({target}) => setSetBornTo(Number(target.value))} /><br />
           <button type="submit">update author</button>
         </form>
-      </div>
+      </div>}
 
     </div>
   )
