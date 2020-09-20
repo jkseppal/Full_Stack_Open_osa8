@@ -1,27 +1,25 @@
-import React from 'react'
-import { useQuery} from '@apollo/client'
-import { ALL_BOOKS } from '../queries'
-
-/*export const ALL_BOOKS = gql`
-  query {
-    allBooks {
-      title
-      published
-      author
-      genres
-      id
-    }
-  }
-`*/
+import React, { useState, useEffect } from 'react'
+import { useQuery, useLazyQuery } from '@apollo/client'
+import { ALL_BOOKS, ALL_GENRES } from '../queries'
 
 const Books = (props) => {
-  const result = useQuery(ALL_BOOKS)
+  const genres = useQuery(ALL_GENRES)
+  const [booksToShow, setBooksToShow] = useState([])
+  const [getBooks, { loading, data }] = useLazyQuery(ALL_BOOKS)
+  
+  useEffect(() => {
+    if (data && data.allBooks) {
+      console.log('data: ', data)
+      console.log('data.allBooks: ', data.allBooks)
+      setBooksToShow(data.allBooks)
+    }
+  }, [data])
   
   if (!props.show) {
     return null
   }
 
-  if (result.loading) {
+  if (loading) {
     return <div>loading...</div>
   }
 
@@ -40,7 +38,7 @@ const Books = (props) => {
               published
             </th>
           </tr>
-          {result.data.allBooks.map(a =>
+          {booksToShow.map(a =>
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -48,24 +46,13 @@ const Books = (props) => {
             </tr>
           )}
         </tbody>
-          </table>
-      {/*<table>
-        <tbody>
-          <tr>
-            <th></th>
-            <th>
-              author
-            </th>
-            <th>
-              published
-            </th>
-          </tr>
-          {result.data.allBooks.map(a =>
-            <tr key={a.title}>
-
-            </tr>)}
-        </tbody>
-          </table>*/}
+      </table>
+      <div>
+        {genres.data.allGenres.map(g =>
+          <button key={g} onClick={() => getBooks({ variables: { genre: g } })}>{g}</button>
+        )}
+        <button onClick={() => getBooks()}>all genres</button>
+      </div>
     </div>
   )
 }
