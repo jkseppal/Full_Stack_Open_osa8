@@ -49,7 +49,7 @@ const Books = (props) => {
       </table>
       <div>
         {genres.data.allGenres.map(g =>
-          <button key={g} onClick={() => getBooks({ variables: { genre: g }, options: { fetchPolicy: 'no-cache' } })}>{g}</button>
+          <button key={g} onClick={() => getBooks({ variables: { genre: g } })}>{g}</button>
         )}
         <button onClick={() => getBooks()}>all genres</button>
       </div>
