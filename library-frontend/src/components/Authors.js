@@ -14,8 +14,6 @@ const Authors = ({ show, token }) => {
     refetchQueries: [ { query: ALL_AUTHORS }, { query: ALL_BOOKS } ]
   })
 
-  //const authors = result.data ? result.data.allAuthors : []
-
   const submit = async (event) => {
     event.preventDefault()
 

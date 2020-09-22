@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { useMutation } from '@apollo/client'
-import { ALL_AUTHORS, ALL_BOOKS, ADD_BOOK } from '../queries'
+import { useMutation, useSubscription } from '@apollo/client'
+import { ALL_AUTHORS, ALL_BOOKS, ADD_BOOK, ALL_GENRES, BOOK_ADDED } from '../queries'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -9,24 +9,16 @@ const NewBook = (props) => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
-  /*const ADD_BOOK = gql`
-    mutation addBook($title: String!, $published: Int!, $author: String!, $genres: [String]) {
-      addBook(
-        title: $title,
-        published: $published,
-        author: $author,
-        genres: $genres
-      ) {
-        title
-        published
-        author
-        genres
-      }
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const book = subscriptionData.data.bookAdded
+      console.log('sub: ', book)
+      window.alert(`book ${book.title} added`)
     }
-  `*/
+  })
 
   const [ addBook ] = useMutation(ADD_BOOK, {
-    refetchQueries: [ { query: ALL_AUTHORS }, { query: ALL_BOOKS } ]
+    refetchQueries: [ { query: ALL_AUTHORS }, { query: ALL_BOOKS }, { query: ALL_GENRES } ], options: { fetchPolicy: 'no-cache'}
   })
 
   if (!props.show) {
